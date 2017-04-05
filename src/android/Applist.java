@@ -6,12 +6,17 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PackageInfo;
+import android.content.pm.FeatureInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -27,6 +32,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Collections;
+
 
 public class Applist extends CordovaPlugin {
     public static void drawableTofile(Drawable drawable,String path)
@@ -49,6 +55,32 @@ public class Applist extends CordovaPlugin {
                 e.printStackTrace();
             }
 
+    }
+	
+
+    private String setDateFormat(long time) {
+        Date date = new Date(time);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String strDate = formatter.format(date);
+        return strDate;
+    }
+	
+	// Convert string array to comma separated string
+    private String getPermissions(String[] requestedPermissions) {
+        String permission = "";
+        for (int i = 0; i < requestedPermissions.length; i++) {
+            permission = permission + requestedPermissions[i] + ",\n";
+        }
+        return permission;
+    }
+ 
+    // Convert string array to comma separated string
+    private String getFeatures(FeatureInfo[] reqFeatures) {
+        String features = "";
+        for (int i = 0; i < reqFeatures.length; i++) {
+            features = features + reqFeatures[i] + ",\n";
+        }
+        return features;
     }
 
 
@@ -117,7 +149,22 @@ public class Applist extends CordovaPlugin {
                                   JSONObject info = new JSONObject();  
                                   info.put("id",packageInfo.packageName);
                                   info.put("name",packageInfo.loadLabel(pm));
-                                  String img_name =  "/Applist/"+ packageInfo.packageName +".png";
+								  info.put("versionName",pm.getPackageInfo(packageInfo.packageName, 0).versionName);
+								  info.put("versionCode",pm.getPackageInfo(packageInfo.packageName, 0).versionCode);
+								  info.put("targetSdkVersion",pm.getPackageInfo(packageInfo.packageName, 0).applicationInfo.targetSdkVersion);
+								  //info.put("minSdkVersion",pm.getPackageInfo(packageInfo.packageName, 0).applicationInfo.minSdkVersion);
+								  info.put("firstInstallTime",setDateFormat(pm.getPackageInfo(packageInfo.packageName, 0).firstInstallTime));
+								  info.put("lastUpdateTime",setDateFormat(pm.getPackageInfo(packageInfo.packageName, 0).lastUpdateTime));
+								  info.put("path",pm.getPackageInfo(packageInfo.packageName, 0).applicationInfo.sourceDir);
+								  if(pm.getPackageInfo(packageInfo.packageName, 0).reqFeatures!=null)
+									info.put("reqFeatures",getFeatures(pm.getPackageInfo(packageInfo.packageName, 0).reqFeatures));
+                                  else
+									info.put("reqFeatures","-");
+								  if(pm.getPackageInfo(packageInfo.packageName, 0).requestedPermissions!=null)
+									info.put("permissions",getPermissions(pm.getPackageInfo(packageInfo.packageName, 0).requestedPermissions));
+								  else
+									info.put("permissions","-"); 	
+								  String img_name =  "/Applist/"+ packageInfo.packageName +".png";
                                   info.put("img",path+img_name);
                                   //cheak exist  or not
                                   File  cheakfile  = new File( path + img_name );
@@ -192,7 +239,23 @@ public class Applist extends CordovaPlugin {
                             JSONObject info = new JSONObject();  
                             info.put("id",packageInfo.packageName);
                             info.put("name",packageInfo.loadLabel(pm));
-                            String img_name =  "/Applist/"+ packageInfo.packageName +".png";
+							info.put("versionName",pm.getPackageInfo(packageInfo.packageName, 0).versionName);
+							info.put("versionCode",pm.getPackageInfo(packageInfo.packageName, 0).versionCode);
+							info.put("targetSdkVersion",pm.getPackageInfo(packageInfo.packageName, 0).applicationInfo.targetSdkVersion);
+							//info.put("minSdkVersion",pm.getPackageInfo(packageInfo.packageName, 0).applicationInfo.minSdkVersion);
+							info.put("firstInstallTime",setDateFormat(pm.getPackageInfo(packageInfo.packageName, 0).firstInstallTime));
+							info.put("lastUpdateTime",setDateFormat(pm.getPackageInfo(packageInfo.packageName, 0).lastUpdateTime));
+							info.put("path",pm.getPackageInfo(packageInfo.packageName, 0).applicationInfo.sourceDir);
+							if(pm.getPackageInfo(packageInfo.packageName, 0).reqFeatures!=null)
+								info.put("reqFeatures",getFeatures(pm.getPackageInfo(packageInfo.packageName, 0).reqFeatures));
+							else
+								info.put("reqFeatures","-");
+							if(pm.getPackageInfo(packageInfo.packageName, 0).requestedPermissions!=null)
+								info.put("permissions",getPermissions(pm.getPackageInfo(packageInfo.packageName, 0).requestedPermissions));
+							else
+								info.put("permissions","-");
+							
+							String img_name =  "/Applist/"+ packageInfo.packageName +".png";
                             info.put("img",path+img_name);
                             //cheak exist  or not
                             File  cheakfile  = new File( path + img_name );
