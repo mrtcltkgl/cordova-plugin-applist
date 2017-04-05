@@ -30,6 +30,7 @@ JSONObject info:
 * app_list.info.permissions is permissions(soon)
 
 Example Object:
+```sh
 {
    __proto__: { },
    firstInstallTime: 2013-09-10 16:32,
@@ -44,6 +45,7 @@ Example Object:
    versionCode: 121157131,
    versionName: 12.11.57
 }
+```
 
 ##Support:
 **Android**
